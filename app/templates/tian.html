@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>甜甜的日记</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='tian/css/style.css')}}">
+</head>
+<body>
+    <div class="container">
+        {% for post in posts %}
+        <div class="post">
+            <div class="head">
+                <span class="no">{{ post.get('post_no') }}</span>
+                <span class="user">{{ post.get('user_name') }}</span>
+                <span class="date">{{ post.get('date') }}</span>
+                <!-- {{ post.get('comment_num') }} -->
+            </div>
+            <div class="tatile">
+                {{ post.get('content') | safe }}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    <div class="footer">
+        <div class="container">
+            
+        </div>
+    </div>
+</body>
+</html>
+

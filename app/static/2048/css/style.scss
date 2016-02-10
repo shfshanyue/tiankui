@@ -1,0 +1,215 @@
+$width: 503px;
+$space: 15px;
+$cell-width: ($width - $space * 5) / 4;
+
+$bgc: #BBADA0;
+$bgc-cell: #CDC0B4;
+
+* {
+    box-sizing: border-box;
+}
+
+@mixin make-tile($bgc-colors: (2: #eee4da, 4: #ede0c8, 8: #f2b179, 16: #f59563, 32: #f67c5f, 64: #f65e3b, 128: #edcf72, 256: #edcc61, 512: #edc850, 1024: #edc53f, 2048: #edc22e), $color: #f9f6f2) {
+    @each $tile, $bgc in $bgc-colors {
+        .tile-#{$tile} {
+            .tile-inner {
+                background-color: $bgc;
+
+                @if $tile >= 8 {
+                    color: $color;
+                }
+            }
+        }
+    }
+}
+
+@mixin make-pos {
+    @for $i from 0 to 4 {
+        @for $j from 0 to 4 {
+            .tile-pos-#{$i}-#{$j} {
+                transform: translate($j * ($cell-width + $space), $i * ($cell-width + $space));
+            }
+        }
+    }
+}
+
+.container {
+    width: $width;
+    margin: 50px auto;
+
+}
+
+.game-container {
+    width: $width;
+    height: $width;
+    background-color: $bgc;
+    border-radius: 10px;
+    margin-top: 30px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    -o-user-select: none;
+    user-select: none;
+}
+
+.tile-container {
+    position: relative;
+}
+
+.grid-cell {
+    width: $cell-width;
+    height: $cell-width;
+    background-color: $bgc-cell;
+    float: left;
+    margin-left: $space;
+    margin-top: $space;
+    border-radius: 3px;
+}
+
+.tile {
+    position: absolute;
+    top: $space;
+    left: $space;
+    transition: transform 100ms ease;
+
+    &,
+    .tile-inner {
+        width: $cell-width;
+        height: $cell-width;
+        line-height: $cell-width;
+    }
+
+    .tile-inner {
+        border-radius: 3px;
+        text-align: center;
+        font-size: 40px;
+    }
+}
+
+@include make-tile;
+
+@include make-pos;
+
+
+@keyframes appear {
+    0% {
+        transform: scale(0);
+    }
+    100% {
+        transform: scale(1);
+    }
+} 
+
+.tile-new .tile-inner {
+    animation: appear 200ms ease 100ms;
+    animation-fill-mode: backwards;
+}
+
+@keyframes merge {
+    0% {
+        transform: scale(0);
+    }
+    80% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+.tile-merge .tile-inner {
+    animation: merge 200ms ease 100ms;
+    animation-fill-mode: backwards;
+}
+
+.heading {
+    position: relative;
+    
+
+    .title {
+        font-size: 80px;
+        display: inline-block;
+    }
+
+    .start {
+        padding: 8px 18px;
+        background-color: $bgc;
+        position: absolute;
+        color: #fff;
+        border-radius: 4px; 
+        cursor: pointer;
+        font-size: 1.4em;
+        right: 0;
+        top: 0;
+    }
+}
+
+@keyframes disappear {
+    0% {
+        left: 3px;
+        top: 8px;
+        opacity: 1;
+    }
+
+    100% {
+        left: 3px;
+        top: -50px;
+        opacity: 0;
+    }
+}
+
+.score-panel {
+    position: absolute;
+    right: 0;
+    top: 60px;
+    font-size: 1.4em;
+
+    > .score {
+        display: inline-block;
+        float: left;
+        padding: 8px 18px;
+        background-color: $bgc;
+        border-radius: 4px;
+        margin-left: 8px;
+        color: #fff;
+    }
+
+    > .score-add {
+        color: #000;
+        display: inline-block;
+        position: absolute;
+        animation: disappear 600ms ease;
+        animation-fill-mode: forwards;
+    }
+}
+
+.text-center {
+    text-align: center;
+}
+
+.over-container {
+    background-color: rgba(#ccc, 0.5);
+    position: absolute;
+    text-align: center;
+    width: 500px;
+    height: 500px;
+    display: none;
+
+    &.active {
+        display: block;
+    }
+
+    h1 {
+        margin-top: 220px;
+    }
+    
+    .start {
+        padding: 8px 18px;
+        background-color: $bgc;
+        color: #fff;
+        border-radius: 4px; 
+        cursor: pointer;
+        font-size: 1.4em;
+        display: inline-block;
+    }
+}

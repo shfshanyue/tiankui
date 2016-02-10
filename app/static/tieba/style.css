@@ -1,0 +1,49 @@
+.container {
+    position: relative;
+}
+.post-list .headline {
+    background-color: #f2fbf2;
+    font-size: 16px;
+    line-height: 2;
+    padding: 0 15px;
+    cursor: pointer;
+}
+.post-list .headline .user {
+    display: inline-block;
+    min-width: 150px;
+}
+.post-list .headline .no {
+    display: inline-block;
+    min-width: 45px;
+}
+.post-list .headline .tail {
+    display: inline-block;
+}
+.post-list .content {
+    line-height: 1.8;
+    font-size: 1.2em;
+}
+.post-list .content .BDE_Image {
+    display: none;
+}
+.post-list .content p {
+    text-indent: 15px;
+    margin: 15px 0 0;
+}
+.post-list hr {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.nav.side {
+    margin-bottom: 10px;   
+}
+
+@media (min-width: 992px) {
+    .side {
+        position: absolute;
+        right: 30px;
+        top: 20px;
+    }
+}
+

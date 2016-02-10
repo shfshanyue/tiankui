@@ -1,0 +1,44 @@
+html {
+  /*background-color: #eee;*/
+
+}
+
+.container {
+  width: 1160px;
+  margin: 0 auto;
+}
+
+.post {
+  padding: 20px 0;
+  border-bottom: 1px solid #eee;
+}
+
+.head {
+  font-size: 16px;
+  line-height: 2;
+  background-color: #f2fbf2;
+}
+
+.head .no {
+  padding-left: 10px;
+  display: inline-block;
+  width: 50px;
+  color: #555;
+}
+
+.head .user {
+  display: inline-block;
+  min-width: 150px;
+  color: #3C763D;
+  text-align: left;
+}
+
+.head .date {
+  display: inline-block;
+  color: #888;
+}
+
+.tatile {
+  font-size: 1em;
+  padding: 10px;
+}

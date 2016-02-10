@@ -1,0 +1,131 @@
+<!DOCTYPE HTML>
+<html>
+  <head>
+    <meta charset="utf8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge"> 
+    <title>贴吧统计</title>
+    <link rel="stylesheet" href="/static/tieba/style.css" type="text/css">
+    <link rel="stylesheet" href="http://libs.baidu.com/bootstrap/3.2.0/css/bootstrap.min.css">
+  </head>
+  <body>
+    <div class="container">
+      <h1>九月份发帖量统计   By   <small>天魁星一号</small></h1>
+      <hr>
+      <!-- <input type="text" name="content" /> -->
+      <div role="tabpanel">
+        <!-- Nav tabs -->
+        <ul class="nav nav-pills side" role="tablist">
+          <li role="presentation" class="active">
+              <a href="#home" aria-controls="home" role="tab" data-toggle="tab">单帖回复数</a>
+          </li>
+          <li role="presentation">
+              <a href="#tab" aria-controls="tab" role="tab" data-toggle="tab">总发贴数</a>
+          </li>
+          <li role="presentation">
+              <a href="#tab1" aria-controls="tab" role="tab" data-toggle="tab">总回复数</a>
+          </li>
+        </ul>
+    
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div role="tabpanel" class="tab-pane active" id="home">
+            <ul class="list-unstyled">
+              {% for topic in topics %}
+              <li class="post-list"> 
+                <div class="headline">
+                  <div class="no">
+                    {{ loop.index }}
+                  </div>
+                  <div class="user text-success">
+                    {{ topic.get('user') }}
+                  </div>
+                  <div class="tail text-muted">
+                    {{ topic.get('reply') }}
+                  </div>
+                </div>
+                <div class="content">  
+                  <p>
+                    <a target="_blank" href="http://tieba.baidu.com{{ topic.get('href') }}">{{ topic.get('title') }}
+                    </a>
+                  </p>    
+                </div>
+                <hr>
+              </li>
+              {% endfor %}
+            </ul>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="tab">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>rank</th>
+                  <th>贴吧Id</th>
+                  <th>发帖数</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for rank in rankPosts %}
+                <tr>
+                  <td class="no">
+                    {{ loop.index }}
+                  </td>
+                  <td>
+                    {{ rank.get('user') }}
+                  </td>
+                  <td>
+                    {{ rank.get('post_count') }}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          <div role="tabpanel" class="tab-pane" id="tab1">
+            <table class="table table-hover">
+              <thead>
+                <tr>
+                  <th>rank</th>
+                  <th>贴吧Id</th>
+                  <th>总发帖回复数</th>
+                  <th class="text-center">平均单帖回复数</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for rank in rankReplys %}
+                <tr>
+                  <td class="no">
+                    {{ loop.index }}
+                  </td>
+                  <td>
+                    {{ rank.get('user') }}
+                  </td>
+                  <td>
+                    {{ rank.get('reply_count') }}
+                  </td>
+                  <td class="text-center">
+                    {{ (rank.get('reply_count') / rank.get('post_count')) | int}}
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </div>
+    <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
+    <script src="http://libs.baidu.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
+    <script>
+    $('.headline').on('click', function() {
+      var user = $(this).find('.user').text();
+      $('.user').each(function() {
+        if ($(this).text() != user)
+          $(this).parent().parent().toggle();
+      });
+    });
+
+    </script>
+  </body>
+</html>
