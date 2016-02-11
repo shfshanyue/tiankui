@@ -23,10 +23,10 @@ class Post(object):
         if self._check_login():
             print 'from cache...'
         else:
-            # 防止cookie过期失效
+            # 防止cookie过期失效，如果失效则清楚cookie
             self.session.cookies.clear()
             self.session.get(self.base_url)
-            self.login(username, password)
+            self._login(username, password)
 
     def _get_tbs(self):
         url_tbs = 'http://tieba.baidu.com/dc/common/tbs'
@@ -53,10 +53,35 @@ class Post(object):
             Boolean: 是否登陆成功
         """
         res = self.session.get(self.base_url)
-        match = re.search(u'个人中心', res.text)
-        if match:
+        if re.search(u'个人中心', res.text):
             return True
         return False
+
+    def sign(self, kw='太原科技大学'):
+        """签到
+
+        Args:
+            kw (str, '太原科技大学'): 签到的贴吧
+
+        """
+        url_sign = 'http://tieba.baidu.com/sign/add'
+        data = {
+            'ie': 'utf-8',
+            'kw': kw,
+            'tbs': self._get_tbs()
+        }
+        headers = {
+            'Host': 'tieba.baidu.com',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',
+            'Accept': 'application/json, text/javascript, */*; q=0.01',
+            'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+            'Accept-Encoding': 'gzip, deflate',
+            'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8',
+            'X-Requested-With': 'XMLHttpRequest',
+            'DNT': '1'
+        }
+        res = self.session.post(url_sign, data=data, headers=headers)
+        return res.json()
 
     def post(self, content, tid, kw='太原科技大学', fid='266662'):
         """百度贴吧回复帖子
@@ -98,7 +123,7 @@ class Post(object):
         res = self.session.post(url_post, data=data, headers=headers)
         return res.json()
 
-    def login(self, username, password):
+    def _login(self, username, password):
         """登陆百度贴吧，如果登陆成功，保存cookie到json文本，下次登陆可以直接从文本中cookie登陆，无需账号密码
 
         Args:
@@ -184,9 +209,8 @@ class TiebaPost(object):
 
 class TiebaTopic(object):
 
-    def __init__(self, pid=0, kw='太原科技大学'):
+    def __init__(self, kw='太原科技大学'):
         self.kw = kw
-        self.pid = pid
         self.base_url = 'http://www.baidu.com'
 
     def __getitem__(self, key):
@@ -200,8 +224,21 @@ class TiebaTopic(object):
         j_threads = soup.find_all(class_='j_thread_list')
         for j_thread in j_threads:
             data = json.loads(j_thread['data-field'])
-            if data['id'] < self.pid:
-                continue
             data['title'] = j_thread.find('a', class_='j_th_tit').get_text()
             yield data
     findPage = find_page
+
+    def get_like(self):
+        """获取关注的贴吧，需要提前登陆，可以考虑装饰器
+
+        Returns:
+            list: 获取关注贴吧的列表
+        """
+        # 由脚本动态生成，无法解析
+        url_like = 'http://tieba.baidu.com/f/like/mylike'
+
+        soup = BeautifulSoup(requests.get(url_like).text, 'html.parser')
+        for row in soup.find('table').find_all('tr')[1:]:
+            print 1
+            yield row.find('a')['title']
+    getLike = get_like

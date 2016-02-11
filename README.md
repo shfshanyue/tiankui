@@ -1,1 +1,1 @@
-搭建在leancloud云平台，参考https://github.com/leancloud/python-getting-started搭建环境
+搭建在leancloud云平台，参考 [Python-getting-started](https://github.com/leancloud/python-getting-started) 搭建环境
