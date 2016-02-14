@@ -6,6 +6,7 @@ import urllib2
 import json
 import re
 import datetime
+import os
 
 
 class Post(object):
@@ -173,6 +174,14 @@ class TiebaPost(object):
     def __init__(self, base):
         self.base = base
 
+    @property
+    def max_page(self):
+        """获得帖子的页数
+        """
+        soup = BeautifulSoup(requests.get(self.base).text, 'html.parser')
+        page = soup.find('input', id='jumpPage4')['max-page']
+        return int(page)
+
     def find_page(self, n):
         """爬取第n页的帖子
 
@@ -195,16 +204,30 @@ class TiebaPost(object):
             # 替换掉百度域图片，百度域的图片无法查看
             info['content'] = re.sub(
                 r'<img[^<>]*?class="BDE_Image"[^<>]*?>', '', unicode(content))
+            info['img'] = [img['src']
+                           for img in post.find_all('img', class_='BDE_Image')]
             yield info
     findPage = find_page
 
-    @property
-    def max_page(self):
-        """获得帖子的页数
+    def get_images(self, path):
+        """下载图片到path路径下，图片以id-楼层数-次数命名
+
+        Args:
+            path (TYPE): 需要下载到的本地路径
         """
-        soup = BeautifulSoup(requests.get(self.base).text, 'html.parser')
-        page = soup.find('input', id='jumpPage4')['max-page']
-        return int(page)
+        max_page = self.max_page
+        for i in range(1, max_page+1):
+            for info in self.find_page(i):
+                for index, img in enumerate(info['img'], 1):
+                    name = u'{}/{}-{}-{}.jpg'.format(
+                        path, info['user_name'], info['post_no'], index)
+                    try:
+                        if not os.path.exists(name):
+                            urllib.urlretrieve(img, name)
+                            print name.encode('utf-8')
+                    except urllib.ContentTooShortError:
+                        print '*'*50
+    getImages = get_images
 
 
 class TiebaTopic(object):
@@ -217,6 +240,14 @@ class TiebaTopic(object):
         return self.find_page(key, None)
 
     def find_page(self, page):
+        """获取贴吧第page页的帖子
+
+        Args:
+            page (INTEGER): 第page页，从0页开始
+
+        Returns:
+            list: 帖子列表
+        """
         page = page * 50
         url = 'http://tieba.baidu.com/f?kw={0:s}&ie=utf-8&pn={1}'.format(
             self.kw, page)

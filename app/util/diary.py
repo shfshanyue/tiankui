@@ -35,6 +35,6 @@ def updatePage(start_page, uid='2674337275'):
                     pass
             Tian(**post).save()
             count += 1
-            print post['user_name'], post['post_no']
+            print post['user_name'].encode('utf-8'), post['post_no']
             print '-' * 50
     return count
