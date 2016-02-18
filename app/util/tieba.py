@@ -230,6 +230,13 @@ class TiebaPost(object):
             for info in self.find_page(i):
                 yield info
 
+    def find_all_page(self):
+        """获取该帖子的所有回帖
+        
+        """
+        for info in self.find_from_page(0):
+            yield info
+
     def get_images(self, path):
         """下载图片到path路径下，图片以id-楼层数-次数命名
 
