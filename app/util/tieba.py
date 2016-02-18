@@ -11,7 +11,7 @@ import os
 
 class Post(object):
 
-    """与需要登陆相关的类，如发帖，签到，
+    """与需要登陆（权限）相关的类，如发帖，签到，
     """
 
     def __init__(self, username, password):
@@ -24,7 +24,7 @@ class Post(object):
         if self._check_login():
             print 'from cache...'
         else:
-            # 防止cookie过期失效，如果失效则清楚cookie
+            # 防止cookie过期失效，如果失效则清除cookie
             self.session.cookies.clear()
             self.session.get(self.base_url)
             self._login(username, password)
@@ -57,6 +57,44 @@ class Post(object):
         if re.search(u'个人中心', res.text):
             return True
         return False
+
+    def _login(self, username, password):
+        """登陆百度贴吧，如果登陆成功，保存cookie到json文本，下次登陆可以直接从文本中cookie登陆，无需账号密码
+
+        Args:
+            username (str): 百度账号
+            password (str): 百度账号密码
+        """
+        url_login = 'https://passport.baidu.com/v2/api/?login'
+        data = {
+            'username': username,
+            'password': password,
+            'u': 'https://passport.baidu.com/',
+            'tpl': 'pp',
+            'token': self._get_token(),
+            'staticpage': 'https://passport.baidu.com/static/passpc-account/html/v3Jump.html',
+            'isPhone': 'false',
+            'charset': 'UTF-8',
+            'callback': 'parent.bd__pcbs__ra48vi'
+        }
+
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+            'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+            'Accept-Encoding': 'gzip, deflate',
+            'DNT': '1',
+            'Connection': 'keep-alive',
+            'Referer': 'https://passport.baidu.com/v2/?login',
+        }
+        res = self.session.post(
+            url_login, data=data, headers=headers)
+        if self._check_login():
+            with open('cookie.json', 'w') as f:
+                json.dump(self.session.cookies.get_dict(), f)
+            print 'login...'
+        else:
+            print 'password or username error!'
 
     def sign(self, kw='太原科技大学'):
         """签到
@@ -124,44 +162,6 @@ class Post(object):
         res = self.session.post(url_post, data=data, headers=headers)
         return res.json()
 
-    def _login(self, username, password):
-        """登陆百度贴吧，如果登陆成功，保存cookie到json文本，下次登陆可以直接从文本中cookie登陆，无需账号密码
-
-        Args:
-            username (str): 百度账号
-            password (str): 百度账号密码
-        """
-        url_login = 'https://passport.baidu.com/v2/api/?login'
-        data = {
-            'username': username,
-            'password': password,
-            'u': 'https://passport.baidu.com/',
-            'tpl': 'pp',
-            'token': self._get_token(),
-            'staticpage': 'https://passport.baidu.com/static/passpc-account/html/v3Jump.html',
-            'isPhone': 'false',
-            'charset': 'UTF-8',
-            'callback': 'parent.bd__pcbs__ra48vi'
-        }
-
-        headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
-            'Accept-Encoding': 'gzip, deflate',
-            'DNT': '1',
-            'Connection': 'keep-alive',
-            'Referer': 'https://passport.baidu.com/v2/?login',
-        }
-        res = self.session.post(
-            url_login, data=data, headers=headers)
-        if self._check_login():
-            with open('cookie.json', 'w') as f:
-                json.dump(self.session.cookies.get_dict(), f)
-            print 'login...'
-        else:
-            print 'password or username error!'
-
 
 class TiebaPost(object):
 
@@ -183,7 +183,7 @@ class TiebaPost(object):
         return int(page)
 
     def find_page(self, n):
-        """爬取第n页的帖子
+        """获取第n页的帖子
 
         Args:
             n (Intergerr): 第n页
@@ -208,6 +208,27 @@ class TiebaPost(object):
                            for img in post.find_all('img', class_='BDE_Image')]
             yield info
     findPage = find_page
+
+    def find_from_page(self, start_page):
+        """获取[start_page:]的帖子
+        
+        Args:
+            start_page (Integer): 帖子的开始页数
+        
+        Raises:
+            TypeError: 帖子开始页数不能超过总帖子数
+        
+        Returns:
+            TYPE: 帖子信息
+        """
+        max_page = self.max_page
+        if abs(start_page) > max_page:
+            raise TypeError('start_page must less than max_page')
+        if start_page < 0:
+            start_page = start_page + max_page + 1
+        for i in xrange(start_page, max_page + 1):
+            for info in self.find_page(i):
+                yield info
 
     def get_images(self, path):
         """下载图片到path路径下，图片以id-楼层数-次数命名
