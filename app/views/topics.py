@@ -39,24 +39,3 @@ def show():
         else:
             raise e
     return render_template('tieba.html', topics=topics, rankPosts=rank_posts, rankReplys=rankReply)
-
-
-@tieba_view.route('/add', methods=['POST'])
-def add():
-    Topic().clear()
-    Rank().clear()
-    TiebaTopic().find()
-    return 'hello, world'
-
-
-@tieba_view.route('/collect', methods=['POST'])
-def collect():
-    querys = Query(Rank).descending('post_count').limit(1000).find()
-    for query in querys:
-        user = query.get('user')
-        reply_count = 0
-        for topic in Query(Topic).equal_to('user', user).find():
-            reply_count = reply_count + topic.get('reply')
-        query.set('reply_count', reply_count)
-        query.save()
-    return str(len(querys))

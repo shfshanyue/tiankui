@@ -211,13 +211,13 @@ class TiebaPost(object):
 
     def find_from_page(self, start_page):
         """获取[start_page:]的帖子
-        
+
         Args:
             start_page (Integer): 帖子的开始页数
-        
+
         Raises:
             TypeError: 帖子开始页数不能超过总帖子数
-        
+
         Returns:
             TYPE: 帖子信息
         """
@@ -232,7 +232,7 @@ class TiebaPost(object):
 
     def find_all_page(self):
         """获取该帖子的所有回帖
-        
+
         """
         for info in self.find_from_page(0):
             yield info
@@ -265,13 +265,13 @@ class TiebaTopic(object):
         self.base_url = 'http://www.baidu.com'
 
     def __getitem__(self, key):
-        return self.find_page(key, None)
+        return self.find_page(key)
 
     def find_page(self, page):
-        """获取贴吧第page页的帖子
+        """获取贴吧第page页的帖子列表
 
         Args:
-            page (INTEGER): 第page页，从0页开始
+            page (INTEGER): 第page页（0为基数）
 
         Returns:
             list: 帖子列表
@@ -283,9 +283,24 @@ class TiebaTopic(object):
         j_threads = soup.find_all(class_='j_thread_list')
         for j_thread in j_threads:
             data = json.loads(j_thread['data-field'])
+            data['pid'] = data['id']
+            data.pop('id', None )
+            data.pop('vid', None)
             data['title'] = j_thread.find('a', class_='j_th_tit').get_text()
             yield data
     findPage = find_page
+
+    def find_to_page(self, start_page, end_page):
+        """获取[start_page, end_page)的帖子列表
+        
+        Args:
+            start_page (Integer): 开始页数
+            end_page (Integer): 结束页数
+        """
+        for page in range(start_page, end_page):
+            for data in self.find_page(page):
+                yield data
+    findToPage = find_to_page
 
     def get_like(self):
         """获取关注的贴吧，需要提前登陆，可以考虑装饰器

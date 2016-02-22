@@ -5,13 +5,22 @@ from leancloud import Query
 from leancloud import Object
 
 from .tieba import TiebaPost
+from .tieba import TiebaTopic
 
 
 class Tian(Object):
     pass
 
 
+class Topic(Object):
+    pass
+
+
 class TianRank(Object):
+    pass
+
+
+class TopicRank(Object):
     pass
 
 
@@ -44,7 +53,7 @@ def updatePage(start_page, uid='2674337275'):
                 'user_name', post['user_name']).first()
             query.increment('count', 1)
             query.save()
-        except LeanCloudError, e:
+        except LeanCloudError as e:
             # 还没有建class或者没有查询到
             if e.code == 101:
                 rank_info = {
@@ -55,3 +64,21 @@ def updatePage(start_page, uid='2674337275'):
             else:
                 raise e
     return info['count']
+
+
+def updateTopic(from_page, to_page):
+    t = TiebaTopic()
+    count = 0
+    err = 0
+    for data in t.find_to_page(from_page, to_page):
+        try:
+            query = Query(Topic).equal_to('pid', data['pid']).first()
+            query.destroy()
+        except LeanCloudError as e:
+            if e.code != 101:
+                err += 1
+                raise e
+        finally:
+            Topic(**data).save()
+            count += 1
+    return count, err

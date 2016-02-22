@@ -1,7 +1,7 @@
 Flask>=0.10.1
 leancloud-sdk>=1.0.9
+beautifulsoup4==4.4.0
 pyopenssl
 ndg-httpsclient
 pyasn1
-beautifulsoup4
 requests
