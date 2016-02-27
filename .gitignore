@@ -62,7 +62,7 @@ start.sh
 
 .idea/*
 *.scssc
-*.json
+cookie.json
 *.map
 remov_pyc.py
 cloud.py

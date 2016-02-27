@@ -1,9 +1,11 @@
 # coding: utf-8
 
-from datetime import datetime
 import pkgutil
+import markdown
 
-from flask import Flask 
+from datetime import datetime
+
+from flask import Flask
 from flask import render_template
 
 from .views.todos import todos_view
@@ -21,17 +23,15 @@ app.register_blueprint(post_view, url_prefix='/tian')
 
 @app.route('/index')
 def index():
-    return render_template('index.html')
-
-
-@app.route('/time')
-def time():
-    return str(datetime.now())
+    # content = markdown.markdown(open('app/static/resume/resume.md').read().decode('utf-8'), output_format='html5')
+    # return content
+    return open('app/static/resume/resume.html').read()
 
 
 @app.route('/2048')
 def game2048():
     return open('app/static/2048/index.html').read()
+
 
 @app.route('/birth')
 def xiaobao():
