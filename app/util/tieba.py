@@ -70,18 +70,20 @@ class Post(object):
             'username': username,
             'password': password,
             'u': 'https://passport.baidu.com/',
-            'tpl': 'pp',
+            'tpl': 'tb',
+            'apiver': 'v3',
+            'tt': '1456579434395',
             'token': self._get_token(),
             'staticpage': 'https://passport.baidu.com/static/passpc-account/html/v3Jump.html',
             'isPhone': 'false',
-            'charset': 'UTF-8',
-            'callback': 'parent.bd__pcbs__ra48vi'
+            'charset': 'GBK',
+            'callback': 'parent.bd__pcbs__n2tlwc'
         }
 
         headers = {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:42.0) Gecko/20100101 Firefox/42.0',
-            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-            'Accept-Language': 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.116 Safari/537.36',
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
+            'Accept-Language': 'zh-CN,zh;q=0.8',
             'Accept-Encoding': 'gzip, deflate',
             'DNT': '1',
             'Connection': 'keep-alive',
@@ -95,6 +97,9 @@ class Post(object):
             print 'login...'
         else:
             print 'password or username error!'
+        print res.headers
+        print res
+        return res
 
     def sign(self, kw='太原科技大学'):
         """签到

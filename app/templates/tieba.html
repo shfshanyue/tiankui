@@ -10,9 +10,8 @@
   </head>
   <body>
     <div class="container">
-      <h1>九月份发帖量统计   By   <small>天魁星一号</small></h1>
+      <h1>一六年{{ month }}发帖量统计   By   <small>1144542900</small></h1>
       <hr>
-      <!-- <input type="text" name="content" /> -->
       <div role="tabpanel">
         <!-- Nav tabs -->
         <ul class="nav nav-pills side" role="tablist">
@@ -21,9 +20,6 @@
           </li>
           <li role="presentation">
               <a href="#tab" aria-controls="tab" role="tab" data-toggle="tab">总发贴数</a>
-          </li>
-          <li role="presentation">
-              <a href="#tab1" aria-controls="tab" role="tab" data-toggle="tab">总回复数</a>
           </li>
         </ul>
     
@@ -38,15 +34,15 @@
                     {{ loop.index }}
                   </div>
                   <div class="user text-success">
-                    {{ topic.get('user') }}
+                    {{ topic.get('author_name') }}
                   </div>
                   <div class="tail text-muted">
-                    {{ topic.get('reply') }}
+                    {{ topic.get('reply_num') }}
                   </div>
                 </div>
                 <div class="content">  
                   <p>
-                    <a target="_blank" href="http://tieba.baidu.com{{ topic.get('href') }}">{{ topic.get('title') }}
+                    <a target="_blank" href="http://tieba.baidu.com/p/{{ topic.get('pid') }}">{{ topic.get('title') }}
                     </a>
                   </p>    
                 </div>
@@ -59,52 +55,22 @@
             <table class="table table-hover">
               <thead>
                 <tr>
-                  <th>rank</th>
+                  <th>排名</th>
                   <th>贴吧Id</th>
                   <th>发帖数</th>
                 </tr>
               </thead>
               <tbody>
-                {% for rank in rankPosts %}
+                {% for k, v in post_rank %}
                 <tr>
                   <td class="no">
                     {{ loop.index }}
                   </td>
                   <td>
-                    {{ rank.get('user') }}
+                    {{ k }}
                   </td>
                   <td>
-                    {{ rank.get('post_count') }}
-                  </td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-          <div role="tabpanel" class="tab-pane" id="tab1">
-            <table class="table table-hover">
-              <thead>
-                <tr>
-                  <th>rank</th>
-                  <th>贴吧Id</th>
-                  <th>总发帖回复数</th>
-                  <th class="text-center">平均单帖回复数</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for rank in rankReplys %}
-                <tr>
-                  <td class="no">
-                    {{ loop.index }}
-                  </td>
-                  <td>
-                    {{ rank.get('user') }}
-                  </td>
-                  <td>
-                    {{ rank.get('reply_count') }}
-                  </td>
-                  <td class="text-center">
-                    {{ (rank.get('reply_count') / rank.get('post_count')) | int}}
+                    {{ v }}
                   </td>
                 </tr>
                 {% endfor %}
@@ -118,14 +84,17 @@
     <script src="http://libs.baidu.com/jquery/1.9.0/jquery.js"></script>
     <script src="http://libs.baidu.com/bootstrap/3.1.1/js/bootstrap.min.js"></script>
     <script>
-    $('.headline').on('click', function() {
-      var user = $(this).find('.user').text();
-      $('.user').each(function() {
-        if ($(this).text() != user)
-          $(this).parent().parent().toggle();
-      });
-    });
+    (function() {
 
+      $('.headline').on('click', function() {
+        var user = $(this).find('.user').text();
+        $('.user').each(function() {
+          if ($(this).text() != user)
+            $(this).parent().parent().toggle();
+        });
+      });
+
+    })()
     </script>
   </body>
 </html>
