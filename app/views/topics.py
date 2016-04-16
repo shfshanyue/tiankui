@@ -33,6 +33,12 @@ def get_month_id(year, month):
     topic = json.load(open('topic.json'))
     return topic[year].get(month)
 
+@tieba_view.route('')
+def show_cur():
+    today = datetime.date.today()
+    year = today.year
+    month = today.month if today.day < 15 else today.month + 0.5
+    return redirect(url_for('.show', year=unicode(year), month=unicode(month)))
 
 @tieba_view.route('/<year>/<month>')
 def show(year, month):
