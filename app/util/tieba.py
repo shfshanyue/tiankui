@@ -291,9 +291,10 @@ class TiebaTopic(object):
             data['pid'] = data['id']
             data.pop('id', None )
             data.pop('vid', None)
-            data.pop('id_top', None)
+            data.pop('is_top', None)
             data.pop('is_protal', None)
-            data.pop('is_membertop', None) 
+            data.pop('is_membertop', None)
+            data.pop('canDelete', None)
             data['title'] = j_thread.find('a', class_='j_th_tit').get_text()
             yield data
     findPage = find_page
