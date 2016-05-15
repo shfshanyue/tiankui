@@ -289,14 +289,9 @@ class TiebaTopic(object):
         for j_thread in j_threads:
             data = json.loads(j_thread['data-field'])
             data['pid'] = data['id']
-            data.pop('id', None )
-            data.pop('vid', None)
-            data.pop('is_top', None)
-            data.pop('is_protal', None)
-            data.pop('is_membertop', None)
-            data.pop('canDelete', None)
             data['title'] = j_thread.find('a', class_='j_th_tit').get_text()
-            yield data
+            result = {k:data[k] for k in ('reply_num', 'title', 'pid', 'author_name', 'first_post_id')}
+            yield result
     findPage = find_page
 
     def find_to_page(self, start_page, end_page):

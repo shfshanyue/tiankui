@@ -1,42 +1,51 @@
 # coding: utf-8
+from leancloud import Object, Query, LeanCloudError
 
-from leancloud import Object
-from leancloud import Query
-from leancloud import LeanCloudError
-from flask import Blueprint
-from flask import request
-from flask import redirect
-from flask import url_for
-from flask import render_template
+from flask import Blueprint, request, redirect, url_for, render_template, jsonify, abort
 
-
-class Todo(Object):
-    pass
+from ..model import Todo
 
 todos_view = Blueprint('todos', __name__)
 
 
-@todos_view.route('')
-def show():
-    try:
-        todos = Query(Todo).limit(100).descending('createdAt').find()
-    except LeanCloudError, e:
-        if e.code == 101:  # 服务端对应的 Class 还没创建
-            todos = []
-        else:
-            raise e
-    return render_template('todos.html', todos=todos, title='Todo List')
+@todos_view.route('', methods=['GET', 'POST'])
+def todos():
+    if request.method == 'GET':
+        try:
+            todos = Query(Todo).limit(800).descending('createdAt').find()
+        except LeanCloudError, e:
+            if e.code == 101:  
+                todos = []
+            else:
+                raise e
+        return jsonify({'results': [todo.dump() for todo in todos]})
+    elif request.method == 'POST':
+        todo = Todo(**request.form.to_dict())
+        todo.save()
+        return jsonify(todo.dump()), 201
 
 
-@todos_view.route('', methods=['POST'])
-def add():
-    content = request.form['content']
-    todo = Todo(content=content)
-    todo.save()
-    return redirect(url_for('todos.show'))
-
-
-@todos_view.route('/delete')
-def delete():
-    Query(Todo).destroy_all()
-    return redirect(url_for('todos.show'))
+@todos_view.route('/<id>', methods=['GET', 'DELETE', 'PUT'])
+def todo(id):
+    if request.method == 'GET':
+        try:
+            todo = Query(Todo).get(id)
+            return jsonify(todo.dump()), 200
+        except:
+            abort(404)
+    elif request.method == 'PUT':
+        try:
+            todo = Query(Todo).get(id)
+            title = request.form.get('title')
+            todo.set('title', title)
+            todo.save()
+            return jsonify(todo.dump())
+        except:
+            abort(404)
+    elif request.method == 'DELETE':
+        try:
+            todo = Query(Todo).get(id)
+            todo.destroy()
+            return jsonify({}), 204
+        except:
+            abort(404)
