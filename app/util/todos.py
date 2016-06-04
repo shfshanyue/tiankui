@@ -232,7 +232,7 @@ datas = (
 )
 
 for data in datas:    
-    data = dict(start=datetime.datetime.strptime(data[0], '%Y-%m-%dT%H:%M:%S'), end = datetime.datetime.strptime(data[1], '%Y-%m-%dT%H:%M:%S'), title=data[2])
+    data = dict(start=data[0], end = data[1], title=data[2])
     response = requests.post(url, data=data)
 
 print(response.text)
